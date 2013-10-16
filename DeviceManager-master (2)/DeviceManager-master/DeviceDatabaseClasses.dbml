@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DeviceDatabase" Class="DeviceDatabaseClassesDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=(LocalDB)\v11.0;AttachDbFilename=|DataDirectory|\DeviceDatabase.mdf;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="DeviceDatabaseConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Connection" Member="Connections">
+    <Type Name="Connection">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ConnectionTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaudRate" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DataBits" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StopBits" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Parity" Type="System.String" DbType="Char(4)" CanBeNull="true" />
+      <Column Name="RTSCTS" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DTR" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="RTS" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="XonXoff" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="PhoneNumber" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ATString" Type="System.String" DbType="VarChar(512)" CanBeNull="true" />
+      <Column Name="IPAddress" Type="System.String" DbType="VarChar(15)" CanBeNull="true" />
+      <Column Name="PortNumber" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Connection_Device" Member="Devices" ThisKey="ID" OtherKey="ConnectionID" Type="Device" />
+      <Association Name="ConnectionType_Connection" Member="ConnectionType" ThisKey="ConnectionTypeID" OtherKey="ID" Type="ConnectionType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Node" Member="Nodes">
+    <Type Name="Node">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DeviceID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="FolderID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Association Name="Node_Node" Member="Nodes" ThisKey="ID" OtherKey="ParentID" Type="Node" />
+      <Association Name="Node_Node" Member="Node1" ThisKey="ParentID" OtherKey="ID" Type="Node" IsForeignKey="true" />
+      <Association Name="Device_Node" Member="Device" ThisKey="DeviceID" OtherKey="ID" Type="Device" IsForeignKey="true" />
+      <Association Name="Folder_Node" Member="Folder" ThisKey="FolderID" OtherKey="ID" Type="Folder" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ConnectionType" Member="ConnectionTypes">
+    <Type Name="ConnectionType">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="ConnectionType_Connection" Member="Connections" ThisKey="ID" OtherKey="ConnectionTypeID" Type="Connection" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Device" Member="Devices">
+    <Type Name="Device">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(128)" CanBeNull="true" />
+      <Column Name="DeviceTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ConnectionID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="SerialNumber" Type="System.String" DbType="Char(10)" CanBeNull="true" />
+      <Column Name="FirmwareRevision" Type="System.String" DbType="VarChar(64)" CanBeNull="true" />
+      <Column Name="PartNumber" Type="System.String" DbType="VarChar(64)" CanBeNull="true" />
+      <Column Name="FIDString" Type="System.String" DbType="VarChar(64)" CanBeNull="true" />
+      <Association Name="Device_Node" Member="Nodes" ThisKey="ID" OtherKey="DeviceID" Type="Node" />
+      <Association Name="Device_DeviceDocument" Member="DeviceDocuments" ThisKey="ID" OtherKey="DeviceID" Type="DeviceDocument" />
+      <Association Name="Connection_Device" Member="Connection" ThisKey="ConnectionID" OtherKey="ID" Type="Connection" IsForeignKey="true" />
+      <Association Name="DeviceType_Device" Member="DeviceType" ThisKey="DeviceTypeID" OtherKey="ID" Type="DeviceType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.DeviceDocument" Member="DeviceDocuments">
+    <Type Name="DeviceDocument">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(64) NOT NULL" CanBeNull="false" />
+      <Column Name="Data" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX) NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="DeviceID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Association Name="Device_DeviceDocument" Member="Device" ThisKey="DeviceID" OtherKey="ID" Type="Device" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.DeviceType" Member="DeviceTypes">
+    <Type Name="DeviceType">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(32) NOT NULL" CanBeNull="false" />
+      <Column Name="CanHaveChildren" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="DeviceType_Device" Member="Devices" ThisKey="ID" OtherKey="DeviceTypeID" Type="Device" />
+    </Type>
+  </Table>
+  <Table Name="dbo.Folder" Member="Folders">
+    <Type Name="Folder">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="Folder_Node" Member="Nodes" ThisKey="ID" OtherKey="FolderID" Type="Node" />
+      <Association Name="Folder_FolderDocument" Member="FolderDocuments" ThisKey="ID" OtherKey="FolderID" Type="FolderDocument" />
+    </Type>
+  </Table>
+  <Table Name="dbo.FolderDocument" Member="FolderDocuments">
+    <Type Name="FolderDocument">
+      <Column Name="ID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Name" Type="System.String" DbType="VarChar(64) NOT NULL" CanBeNull="false" />
+      <Column Name="Data" Type="System.Data.Linq.Binary" DbType="VarBinary(MAX) NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="FolderID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Association Name="Folder_FolderDocument" Member="Folder" ThisKey="FolderID" OtherKey="ID" Type="Folder" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>
